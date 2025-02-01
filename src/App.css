@@ -1,0 +1,47 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/*contact-list*/
+.c-body{
+  /* background-color: yellow; */
+}
+
+.c-tsearch{
+  /* background-color: red; */
+
+  /* .MuiOutlinedInput-root{
+    background-color: green;
+  } */
+
+}
+
+
+/*AddList*/
+.al-input{
+  margin-bottom: 10px;
+  .MuiOutlinedInput-root{
+    height: 40px;
+    background-color: white;
+  }
+}
+.al-label{
+  font-size: 15px;
+  font-weight: 600 !important;
+}
+.icons{
+  cursor: pointer;
+}
+
+.al-form{
+  .MuiFormControl-root{
+    margin-bottom: 10px;
+  }
+}
+
+
+/*Register*/
+.submit-button{
+  background-color: black !important;
+}
