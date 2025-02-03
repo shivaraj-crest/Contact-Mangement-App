@@ -1,6 +1,5 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
 import ContactList from './components/ContactList';
 import { useState } from 'react';
 import AddList from './components/AddList';
@@ -9,18 +8,21 @@ import EditContact from './components/EditContact';
 import ViewContact from './components/ViewContact';
 import Register from './components/Register';
 import Login  from './components/Login';
+import ProtectedRoute from './components/protectedRoutes';
 
 function App() {
   let contactArray = [
     { 
       id:'1',
       name:"shivaraj Patil",
-      email:"patilshivaraj65@gmail.com"
+      email:"patilshivaraj65@gmail.com",
+      phone:"0987098798"
     },
     {
       id:'2',
       name:"Naitik Patel",
-      email:"naitikpatel69@gmail.com"
+      email:"naitikpatel69@gmail.com",
+      phone:"0987098798"
     }
   ]
   console.log(contactArray);
@@ -48,14 +50,22 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Header />
-        <Routes>
-          <Route path="/" element={<ContactList contacts={contacts} onDeleteContact={onDeleteContact}/>} />
-          <Route path="/add-contact" element={<AddList onAddContact={onAddContact}/>} />
-          <Route path="/edit-contact/:id" element={<EditContact onEditContact={onEditContact}/> } />
-          <Route path='/view-contact/:id' element={<ViewContact/>} />
+        
+        
+        <Routes >
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
+
+          {/* Protected Routes
+          you can use protected routes to protect the routes and make a authenitation check */}
+          <Route path="/" element={<ProtectedRoute/>}>
+        
+            <Route path="/" element={<ContactList contacts={contacts} onDeleteContact={onDeleteContact}/>} />
+            <Route path="/add-contact" element={<AddList onAddContact={onAddContact}/>} />
+            <Route path="/edit-contact/:id" element={<EditContact onEditContact={onEditContact}/> } />
+            <Route path='/view-contact/:id' element={<ViewContact/>} />
+            
+          </Route>
         </Routes>
       </BrowserRouter>
     </div>

@@ -45,3 +45,11 @@
 .submit-button{
   background-color: black !important;
 }
+
+/*Header*/
+.toolbar-custom{
+  .css-i9gxme{
+    flex-grow: 0 !important;
+    -webkit-box-flex: 1 !important;
+  }
+}

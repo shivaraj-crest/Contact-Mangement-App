@@ -10,7 +10,11 @@ import {
  
 } from "@mui/material";
 import {Link} from 'react-router-dom';
+import axios from '../services/axiosConfig';
+import { useNavigate } from 'react-router-dom';
 const Register = () => {
+    const navigate = useNavigate();
+
   const initialValues = {
     name: "",
     email: "",
@@ -26,9 +30,9 @@ const Register = () => {
     email: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
-    phoneNumber: Yup.string()
-    .matches(/^[+]?[0-9]{10}$/, "Please enter 10 digit phone number")
-    .required("Phone number is required"),
+    // phoneNumber: Yup.string()
+    // .matches(/^[+]?[0-9]{10}$/, "Please enter 10 digit phone number")
+    // .required("Phone number is required"),
     password: Yup.string()
       .min(8, "Password must be at least 8 characters")
       .required("Password is required"),
@@ -37,10 +41,14 @@ const Register = () => {
       .required("Confirm Password is required"),
   });
 
-  const handleSubmit = (values, { resetForm }) => {
+  const handleSubmit =async (values, { resetForm }) => {
+    const response = await axios.post("/user/register", values);
+
     console.log("Form Data:", values);
+    console.log("Registration Response:", response);
     alert("Registration Successful!");
     resetForm();
+    navigate("/login");
   };
 
   return (
@@ -85,24 +93,6 @@ const Register = () => {
                 onBlur={handleBlur}
                 error={touched.email && Boolean(errors.email)}
                 helperText={touched.email && errors.email}
-              />
-            </Box>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body1" className="al-label mt-3">
-                Phone Number
-              </Typography>
-              <TextField
-                className="al-input"
-                fullWidth
-                id="phoneNumber"
-                name="phoneNumber"
-                placeholder="Enter your phone number"
-                type="tel"
-                variant="outlined"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.phoneNumber && Boolean(errors.phoneNumber)}
-                helperText={touched.phoneNumber && errors.phoneNumber}
               />
             </Box>
             <Box sx={{ mb: 2 }}>

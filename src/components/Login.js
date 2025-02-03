@@ -3,9 +3,11 @@ import { Button,TextField,InputAdornment,Box,Card,Container } from '@mui/materia
 import { Formik, Form, Field } from "formik";
 import * as yup from "yup";
 import { Typography} from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from '../services/axiosConfig';
 
 const Login = () => {
-
+    const navigate = useNavigate();
     const initialValues = {
         email: "",
         password: ""
@@ -16,9 +18,28 @@ const Login = () => {
         password: yup.string().required('Password is required')
     });
 
-    const onSubmit = (values) => {
-        console.log('Form data:', values);
+    const onSubmit =async (values) => {
+      try {
+        const response = await axios.post("/user/login", values);
+        console.log("login reponseeee",response);
+        
+        if (response.data.token) {
+            localStorage.setItem("token", response.data.token);
+            navigate("/"); // Redirect to home page
+        } else {
+            alert("Invalid credentials");
+        }
+        if(response.data.userId){
+          localStorage.setItem("userId", response.data.userId);
+        }
+
+
+    } catch (error) {
+        console.error("Login failed:", error);
+        alert("Login failed! Please check your credentials.");
     }
+  
+  }
   return (
     <Container maxWidth="sm" sx={{ mt: 4, p: 3, boxShadow: 2, borderRadius: 2,backgroundColor:"#8080800f" }}>
         <Typography variant="h6" align="left" gutterBottom sx={{fontWeight:"700"}}>
@@ -67,6 +88,12 @@ const Login = () => {
             <Button className='submit-button' type="submit" variant="contained" color="primary" sx={{backgroundColor:"black"}}>
               Login
             </Button>
+            <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+              Don't have an account?{" "}
+              <Link to="/register" style={{ color: "#1976d2", textDecoration: "none", fontWeight: "bold" }}>
+                Register
+              </Link>
+            </Typography> 
           </Form>
         )}
       </Formik>

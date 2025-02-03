@@ -1,30 +1,72 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button,TextField,InputAdornment } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,useLocation } from 'react-router-dom';
 import {Search} from '@mui/icons-material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare} from '@fortawesome/free-solid-svg-icons';
+import axios from '../services/axiosConfig';
+
 
 const ContactList = (props) => {
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const [contacts, setContacts] = useState([]);
+  const [refresh, setRefresh] = useState(false);
+
+  const fetchContacts = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const response = await axios.get("/contact/get", {
+        // headers: {
+        //   "Authorization": `Bearer ${token}`
+        // }
+        params: {
+          userId: userId
+        }
+      });
+      setContacts(response.data.contacts);
+      // console.log("response",response.data.contacts);
+    } catch (error) {
+      console.error("Error fetching contacts:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Check if refresh is present in location state
+    if (location.state?.refresh) {
+      console.log("refresh2",location.state.refresh);
+      setRefresh(true); // Toggle refresh to trigger useEffect
+    }
+    
+  }, []);
+
+  useEffect(() => {
+    console.log("refresh1",refresh);
+    fetchContacts();
+    // setRefresh(false);
+  }, [refresh]);
 
   const handleAddContact = () =>{
     console.log("Add Contact Clicked");
     navigate('/add-contact');
   }
 
-  const onDeleteContact = (id) =>{
-    console.log(id)
-    const newContacts = props.contacts.filter((contact)=>{
-      console.log(contact.id);
-      return contact.id!==id;
-    })
-
-    props.onDeleteContact(newContacts);
-  }
+  const onDeleteContact = async (id) => {
+    try {
+      const userId = localStorage.getItem("userId");
+      await axios.delete(`/contact/delete`, {
+        params: {
+          userId: userId,
+        }
+      });
+      setRefresh(!refresh);
+    } catch (error) {
+      console.error("Error deleting contact:", error);
+    }
+  };
 
   const editContactHandler = (contact) =>{
     navigate(`/edit-contact/${contact.id}`,{state:{contact}})
@@ -69,9 +111,10 @@ const ContactList = (props) => {
       </div>
 
       <div className='c-list w-75 mx-auto mt-3'>
-      {props.contacts && props.contacts.length > 0 ? (
-          props.contacts.map((contact) => (
+      {contacts && contacts.length > 0 ? (
+          contacts.map((contact) => (
             <div
+              key={contact.id}
               className="d-flex align-items-center justify-content-between border-bottom py-2"
             >
               {/* Contact Info */}
@@ -87,6 +130,7 @@ const ContactList = (props) => {
                   <span onClick={()=> onClickProfile(contact)} style={{ fontSize: "0.9rem", color: "gray", cursor: "pointer" }}>
                     {contact.email}
                   </span>
+                  <span onClick={()=> onClickProfile(contact)} style={{ fontSize: "0.9rem", color: "gray", cursor: "pointer" }}>{contact.phone}</span>
                 </div>
               </div>
 
