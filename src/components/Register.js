@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -12,8 +12,10 @@ import {
 import {Link} from 'react-router-dom';
 import axios from '../services/axiosConfig';
 import { useNavigate } from 'react-router-dom';
+
 const Register = () => {
     const navigate = useNavigate();
+    const [apiError, setApiError] = useState({ email: "", username: "" });
 
   const initialValues = {
     name: "",
@@ -41,14 +43,26 @@ const Register = () => {
       .required("Confirm Password is required"),
   });
 
-  const handleSubmit =async (values, { resetForm }) => {
-    const response = await axios.post("/user/register", values);
-
-    console.log("Form Data:", values);
-    console.log("Registration Response:", response);
-    alert("Registration Successful!");
-    resetForm();
-    navigate("/login");
+  const handleSubmit = async (values, { resetForm, setFieldError }) => {
+    try {
+      const response = await axios.post("/user/register", values);
+      console.log("Registration Response:", response);
+      alert("Registration Successful!");
+      resetForm();
+      navigate("/login");
+    } catch (error) {
+      // Handle API validation errors
+      if (error.response && error.response.data && error.response.data.errors) {
+        // Loop through each error and set the appropriate field error
+        error.response.data.errors.forEach(err => {
+          setFieldError(err.field, err.message);
+        });
+      } else {
+        // Handle generic error
+        console.error("Registration error:", error);
+        alert("Registration failed. Please try again.");
+      }
+    }
   };
 
   return (

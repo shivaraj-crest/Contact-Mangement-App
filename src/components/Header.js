@@ -28,6 +28,7 @@ function ResponsiveAppBar() {
   //handle logout
   function handleLogout(){
     localStorage.removeItem("userId");
+    localStorage.removeItem("token");
     navigate("/login");
   }
   //opens and closes menu in appbar
@@ -113,7 +114,7 @@ function ResponsiveAppBar() {
               flexGrow: 1,
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
+          
               color: 'inherit',
               textDecoration: 'none',
             }}

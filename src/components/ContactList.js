@@ -15,13 +15,19 @@ const ContactList = (props) => {
   const location = useLocation();
   const [contacts, setContacts] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [user, setUser] = useState(null);
 
   const fetchContacts = async () => {
     try {
       const userId = localStorage.getItem("userId");
+      const response1 = await axios.get(`/contact/${userId}`);
+      console.log("response1",response1);
+      setUser(response1.data.contact.username);
       const response = await axios.get("/contact/get", {
         // headers: {
         //   "Authorization": `Bearer ${token}`
+
         // }
         params: {
           userId: userId
@@ -56,10 +62,13 @@ const ContactList = (props) => {
 
   const onDeleteContact = async (id) => {
     try {
+      console.log(" id id",id);
+      
       const userId = localStorage.getItem("userId");
-      await axios.delete(`/contact/delete`, {
+      await axios.delete(`/contact/delete`,{
         params: {
           userId: userId,
+          id: id
         }
       });
       setRefresh(!refresh);
@@ -76,10 +85,18 @@ const ContactList = (props) => {
     navigate(`/view-contact/${contact.id}`,{state:{contact}});
   }
 
+  const filteredContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className='contact-list mt-4'>
+      <div className='w-75 mx-auto'>
+        <h1 className='text-center'>Welcome back {user}</h1>
+      </div>
       <div className='c-body w-75 mx-auto d-flex justify-content-between'>
         <h2 className='list-header'>Contact List</h2>
+
         <Button className='' variant="contained" onClick={handleAddContact}>Add Contact</Button>
       </div>
       <div className='c-search mx-auto mt-3'>
@@ -87,6 +104,8 @@ const ContactList = (props) => {
           className='c-tsearch d-flex w-75 mx-auto'
           variant="outlined"
           placeholder='Search Contacts'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           sx={{
             "& .MuiOutlinedInput-root": {
               height: "45px", // Adjust the height of the container
@@ -111,8 +130,8 @@ const ContactList = (props) => {
       </div>
 
       <div className='c-list w-75 mx-auto mt-3'>
-      {contacts && contacts.length > 0 ? (
-          contacts.map((contact) => (
+      {filteredContacts && filteredContacts.length > 0 ? (
+          filteredContacts.map((contact) => (
             <div
               key={contact.id}
               className="d-flex align-items-center justify-content-between border-bottom py-2"
@@ -151,7 +170,7 @@ const ContactList = (props) => {
             </div>
           ))
         ) : (
-          <p className="text-center text-muted">No contacts available.</p>
+          <p className="text-center text-muted">No contacts found.</p>
         )}
       </div>
 

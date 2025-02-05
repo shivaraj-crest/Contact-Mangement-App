@@ -37,6 +37,11 @@ const EditContact = (props) => {
     onSubmit: async(values) => {
       const userId = localStorage.getItem("userId");
       try {
+        values = {
+          ...values,
+          id: id
+        }
+        console.log('Request URL:', axios.defaults.baseURL + '/contact/update/' + id);
         const response = await axios.put(`/contact/update`, values, {
           params: {
             userId: userId
